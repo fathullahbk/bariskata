@@ -3,189 +3,188 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, ArrowRight } from 'lucide-react';
+import { Sun, Moon, Search, Sparkles, TrendingUp, Hash, ArrowUpRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export default function HomePage() {
+export default function TeenHubPage() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [activeCat, setActiveCat] = useState('All');
 
-  // Mencegah hydration error agar tema sinkron antara server dan client
   useEffect(() => setMounted(true), []);
 
   const categories = [
-    'Pengembangan Diri (Personal Growth)',
-    'Kesehatan Mental (Mental Health)',
-    'Karier & Studi Lanjut',
-    'Tips Belajar (Study Skills)',
-    'Hubungan Sosial (Social Relationship)'
+    { name: 'All', emoji: '🔥' },
+    { name: 'Personal Growth', emoji: '🚀' },
+    { name: 'Mental Health', emoji: '❤️‍🩹' },
+    { name: 'Career & Study', emoji: '🎓' },
+    { name: 'Social Life', emoji: '💬' }
   ];
 
   const allPosts = [
-    { id: 1, title: 'Cara Membangun Kebiasaan Pagi yang Produktif', date: '5 Jan 2026', slug: 'kebiasaan-pagi', category: 'Pengembangan Diri (Personal Growth)', summary: 'Langkah kecil untuk perubahan besar dalam hidup Anda.', tag: '#Habit' },
-    { id: 2, title: 'Mengatasi Burnout saat Kuliah', date: '3 Jan 2026', slug: 'mengatasi-burnout', category: 'Kesehatan Mental (Mental Health)', summary: 'Tips menjaga kesehatan mental di tengah tekanan akademik.', tag: '#Wellness' },
-    { id: 3, title: 'Persiapan Menghadapi Interview Kerja Pertama', date: '1 Jan 2026', slug: 'interview-kerja', category: 'Karier & Studi Lanjut', summary: 'Hal-hal penting yang harus Anda siapkan sebelum bertemu rekruter.', tag: '#Career' },
-    { id: 4, title: 'Teknik Pomodoro: Belajar Fokus dalam 25 Menit', date: '28 Des 2025', slug: 'teknik-pomodoro', category: 'Tips Belajar (Study Skills)', summary: 'Metode belajar paling efektif untuk mahasiswa.', tag: '#Study' },
-    { id: 5, title: 'Cara Berkomunikasi Efektif dengan Pasangan', date: '25 Des 2025', slug: 'komunikasi-efektif', category: 'Hubungan Sosial (Social Relationship)', summary: 'Membangun hubungan yang sehat melalui komunikasi yang jujur.', tag: '#Relation' },
-    { id: 6, title: 'Mindset Orang Sukses: Growth Mindset', date: '20 Des 2025', slug: 'growth-mindset', category: 'Pengembangan Diri (Personal Growth)', summary: 'Mengapa cara berpikir menentukan masa depan Anda.', tag: '#Mindset' },
+    { id: 1, title: 'Morning Routine Hacks: Auto-Pilot Produktif', category: 'Personal Growth', date: '2h ago', read: '3 min', color: 'from-pink-500 to-rose-500', slug: 'kebiasaan-pagi' },
+    { id: 2, title: 'Burnout Kuliah? Sini Kita Obatin', category: 'Mental Health', date: '1d ago', read: '5 min', color: 'from-purple-500 to-indigo-500', slug: 'mengatasi-burnout' },
+    { id: 3, title: 'POV: Kamu Lolos Interview Kerja Pertama', category: 'Career & Study', date: '2d ago', read: '4 min', color: 'from-cyan-500 to-blue-500', slug: 'interview-kerja' },
+    { id: 4, title: 'Belajar 25 Menit doang tapi Paham? (Pomodoro)', category: 'Career & Study', date: '3d ago', read: '2 min', color: 'from-emerald-400 to-green-500', slug: 'teknik-pomodoro' },
+    { id: 5, title: 'Red Flag vs Green Flag dalam Hubungan', category: 'Social Life', date: '4d ago', read: '6 min', color: 'from-orange-400 to-red-500', slug: 'komunikasi-efektif' },
+    { id: 6, title: 'Growth Mindset: Cheat Code Orang Sukses', category: 'Personal Growth', date: '5d ago', read: '4 min', color: 'from-violet-500 to-fuchsia-500', slug: 'growth-mindset' },
   ];
+
+  // Filter logic sederhana
+  const filteredPosts = activeCat === 'All' 
+    ? allPosts 
+    : allPosts.filter(post => post.category === activeCat);
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-500 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0a0a] text-slate-900 dark:text-white transition-colors duration-300 font-sans selection:bg-lime-400 selection:text-black">
       
-      {/* MODERN NAVBAR WITH THEME TOGGLE */}
-      <nav className="sticky top-0 z-50 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 py-4">
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          <Link href="/" className="group flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold rotate-3 group-hover:rotate-0 transition-transform">B</div>
-            <span className="text-xl font-black tracking-tight uppercase italic">Bariskata</span>
+      {/* BACKGROUND BLOBS (Vibe Setter) */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-purple-500/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div className="absolute bottom-[10%] right-[-10%] w-[30vw] h-[30vw] bg-blue-500/20 rounded-full blur-[100px]"></div>
+      </div>
+
+      {/* FLOATING NAVBAR */}
+      <nav className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+        <div className="bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full px-6 py-3 shadow-xl flex items-center gap-6 md:gap-12">
+          <Link href="/" className="font-black italic tracking-tighter text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            BARISKATA.
           </Link>
           
-          <div className="flex items-center gap-8">
-            <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-              <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
-              <Link href="#kategori" className="hover:text-blue-600 transition-colors">Kategori</Link>
-            </div>
-            
-            {/* Theme Switcher */}
-            <button 
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:ring-2 ring-blue-500 transition-all"
-              aria-label="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-blue-600" />}
-            </button>
-            
-            <Link href="/about" className="hidden md:block px-5 py-2.5 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-500 dark:hover:text-white transition-all">
-              About
-            </Link>
+          <div className="hidden md:flex gap-6 text-sm font-bold text-slate-500 dark:text-slate-400">
+            <Link href="#" className="hover:text-black dark:hover:text-white transition-colors">For You</Link>
+            <Link href="#" className="hover:text-black dark:hover:text-white transition-colors">Trending</Link>
+            <Link href="#" className="hover:text-black dark:hover:text-white transition-colors">Topics</Link>
           </div>
+
+          <button 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
       </nav>
 
-      {/* MINIMALIST HERO WITH ANIMATION */}
-      <header className="relative py-24 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-40 dark:opacity-20">
-           <div className="absolute top-10 left-10 w-72 h-72 bg-blue-200 dark:bg-blue-900 rounded-full blur-[120px]"></div>
-           <div className="absolute bottom-10 right-10 w-72 h-72 bg-indigo-200 dark:bg-indigo-900 rounded-full blur-[120px]"></div>
-        </div>
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="container mx-auto px-6 text-center"
-        >
-          <span className="inline-block px-4 py-1.5 mb-6 text-[10px] font-bold tracking-[0.3em] uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full border border-blue-100 dark:border-blue-800">
-            Journal & Thought
-          </span>
-          <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-none">
-            Eksplorasi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Pertumbuhan</span> Diri.
-          </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Kumpulan barisan kata yang dirancang untuk membantu Anda menavigasi karier, kesehatan mental, dan hubungan sosial.
-          </p>
-        </motion.div>
-      </header>
-
-      {/* CATEGORY SECTIONS WITH SCROLL REVEAL */}
-      <section id="kategori" className="pb-24">
-        <div className="container mx-auto px-6">
+      {/* HERO SECTION */}
+      <main className="container mx-auto px-6 pt-40 pb-20 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold uppercase tracking-widest mb-6"
+          >
+            <Sparkles size={14} /> Daily Inspiration
+          </motion.div>
           
-          {categories.map((cat) => {
-            const filteredPosts = allPosts.filter(post => post.category === cat);
+          <motion.h1 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-black tracking-tight mb-6 leading-tight"
+          >
+            Level Up Your <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-x">
+              Life & Mindset.
+            </span>
+          </motion.h1>
+          
+          {/* SEARCH BAR MODERN */}
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="relative max-w-lg mx-auto group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+            <div className="relative bg-white dark:bg-[#1a1a1a] rounded-2xl flex items-center p-2 shadow-2xl border border-slate-200 dark:border-white/10">
+              <Search className="ml-4 text-slate-400" size={20} />
+              <input 
+                type="text" 
+                placeholder="Cari topik curhat hari ini..." 
+                className="w-full bg-transparent border-none outline-none px-4 py-3 text-sm font-medium placeholder:text-slate-400"
+              />
+              <button className="bg-black dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-xl font-bold text-sm hover:opacity-80 transition-opacity">
+                Search
+              </button>
+            </div>
+          </motion.div>
+        </div>
 
-            return (
-              <motion.div 
-                key={cat} 
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6 }}
-                className="mb-24 last:mb-0"
-              >
-                {/* Header Kategori */}
-                <div className="flex items-end justify-between mb-10 border-b border-slate-200 dark:border-slate-800 pb-4">
-                  <div>
-                    <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-1">{cat}</h2>
-                    <p className="text-sm text-slate-400 dark:text-slate-500 font-medium">Topik terpilih hari ini</p>
+        {/* CATEGORY PILLS (SCROLLABLE) */}
+        <div className="flex gap-3 overflow-x-auto pb-8 justify-start md:justify-center no-scrollbar">
+          {categories.map((cat) => (
+            <button
+              key={cat.name}
+              onClick={() => setActiveCat(cat.name)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 ${
+                activeCat === cat.name 
+                ? 'bg-black dark:bg-white text-white dark:text-black scale-105 shadow-lg' 
+                : 'bg-white dark:bg-[#1a1a1a] text-slate-500 border border-slate-200 dark:border-white/10 hover:border-slate-400'
+              }`}
+            >
+              <span>{cat.emoji}</span> {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* BENTO GRID LAYOUT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPosts.map((post, i) => (
+            <motion.div
+              key={post.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+              className="group relative bg-white dark:bg-[#121212] rounded-[30px] p-1 border border-slate-100 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 transition-all hover:shadow-2xl hover:-translate-y-1"
+            >
+              <div className="h-full bg-slate-50 dark:bg-[#1a1a1a] rounded-[26px] p-6 flex flex-col justify-between overflow-hidden relative">
+                
+                {/* Gradient Blur Top */}
+                <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${post.color} blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-500`}></div>
+
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest bg-white dark:bg-black/50 backdrop-blur px-3 py-1 rounded-full border border-black/5 dark:border-white/10">
+                      <Hash size={10} /> {post.category}
+                    </span>
+                    <span className="text-xs font-bold text-slate-400">{post.date}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-widest">Archive / {filteredPosts.length}</span>
+                  
+                  <Link href={`/blog/${post.slug}`}>
+                    <h3 className="text-xl md:text-2xl font-black leading-tight mb-2 group-hover:underline decoration-2 underline-offset-4 decoration-blue-500 cursor-pointer">
+                      {post.title}
+                    </h3>
+                  </Link>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium line-clamp-2">
+                    Pelajari rahasia kecil yang bikin perubahan besar dalam hidup lo.
+                  </p>
                 </div>
 
-                {filteredPosts.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredPosts.map((post, index) => (
-                      <motion.div 
-                        key={post.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        whileHover={{ y: -10 }}
-                        className="group relative bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]"
-                      >
-                        <div className="flex justify-between items-start mb-12">
-                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{post.date}</span>
-                          <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                            <ArrowRight size={18} />
-                          </div>
-                        </div>
-                        
-                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                        </h3>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                          {post.summary}
-                        </p>
-                        
-                        <div className="flex gap-2 mt-auto">
-                           <span className="px-3 py-1 bg-slate-50 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter italic">
-                            {post.tag || '#Insight'}
-                           </span>
-                        </div>
-                      </motion.div>
-                    ))}
+                <div className="mt-8 flex items-center justify-between border-t border-black/5 dark:border-white/5 pt-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                    <span>⏱ {post.read} read</span>
                   </div>
-                ) : (
-                  <div className="py-16 px-8 rounded-[32px] border-2 border-dashed border-slate-100 dark:border-slate-800 flex items-center justify-center">
-                    <p className="text-slate-300 dark:text-slate-700 text-sm font-medium italic uppercase tracking-widest text-center">Belum ada artikel dalam kategori ini</p>
+                  <div className="w-8 h-8 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ArrowUpRight size={16} />
                   </div>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* MODERN FOOTER */}
-      <footer className="bg-slate-900 dark:bg-black text-white py-24 rounded-t-[60px] transition-colors duration-500">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 justify-between items-center gap-12 border-b border-slate-800 pb-16">
-            <motion.div
-               initial={{ opacity: 0, x: -20 }}
-               whileInView={{ opacity: 1, x: 0 }}
-               viewport={{ once: true }}
-            >
-              <h2 className="text-4xl font-black tracking-tighter mb-4 italic uppercase">Bariskata<span className="text-blue-500">.</span></h2>
-              <p className="text-slate-400 text-sm max-w-sm">Dapatkan pemikiran terbaik tentang pertumbuhan diri langsung di inbox Anda setiap minggu.</p>
+                </div>
+              </div>
             </motion.div>
-            <div className="flex flex-col sm:flex-row gap-3">
-               <input type="email" placeholder="email@kamu.com" className="bg-slate-800 border-none rounded-2xl px-6 py-4 flex-grow focus:ring-2 focus:ring-blue-600 outline-none text-sm transition-all shadow-inner" />
-               <button className="bg-white text-slate-900 px-8 py-4 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition-all shadow-lg">Join</button>
-            </div>
-          </div>
-          <div className="pt-12 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] italic">Bariskata — 2026</p>
-            <div className="flex gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              <a href="#" className="hover:text-blue-400 transition-colors">Twitter</a>
-              <a href="#" className="hover:text-blue-400 transition-colors">Instagram</a>
-              <a href="#" className="hover:text-blue-400 transition-colors">GitHub</a>
-            </div>
-          </div>
+          ))}
         </div>
-      </footer>
+      </main>
 
+      {/* FOOTER */}
+      <footer className="py-12 text-center border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a]">
+        <div className="flex justify-center items-center gap-2 mb-4">
+          <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold italic">B</div>
+        </div>
+        <p className="text-slate-400 text-sm font-medium">Built for the <span className="text-black dark:text-white font-bold">Future You</span>.</p>
+      </footer>
     </div>
   );
 }
