@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Search, Sparkles, TrendingUp, Hash, ArrowUpRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function TeenHubPage() {
   const { theme, setTheme } = useTheme();
@@ -21,14 +22,34 @@ export default function TeenHubPage() {
     { name: 'Social Life', emoji: '💬' }
   ];
 
-  const allPosts = [
-    { id: 1, title: 'Morning Routine Hacks: Auto-Pilot Produktif', category: 'Personal Growth', date: '2h ago', read: '3 min', color: 'from-pink-500 to-rose-500', slug: 'kebiasaan-pagi' },
-    { id: 2, title: 'Burnout Kuliah? Sini Kita Obatin', category: 'Mental Health', date: '1d ago', read: '5 min', color: 'from-purple-500 to-indigo-500', slug: 'mengatasi-burnout' },
-    { id: 3, title: 'POV: Kamu Lolos Interview Kerja Pertama', category: 'Career & Study', date: '2d ago', read: '4 min', color: 'from-cyan-500 to-blue-500', slug: 'interview-kerja' },
-    { id: 4, title: 'Belajar 25 Menit doang tapi Paham? (Pomodoro)', category: 'Career & Study', date: '3d ago', read: '2 min', color: 'from-emerald-400 to-green-500', slug: 'teknik-pomodoro' },
-    { id: 5, title: 'Red Flag vs Green Flag dalam Hubungan', category: 'Social Life', date: '4d ago', read: '6 min', color: 'from-orange-400 to-red-500', slug: 'komunikasi-efektif' },
-    { id: 6, title: 'Growth Mindset: Cheat Code Orang Sukses', category: 'Personal Growth', date: '5d ago', read: '4 min', color: 'from-violet-500 to-fuchsia-500', slug: 'growth-mindset' },
-  ];
+// Ganti bagian variabel allPosts dengan ini:
+const [allPosts, setAllPosts] = useState<any[]>([]);
+
+useEffect(() => {
+  fetchPosts();
+  setMounted(true);
+}, []);
+
+async function fetchPosts() {
+  const { data } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (data) setAllPosts(data);
+}
+
+  const [showLogin, setShowLogin] = useState(false);
+  const [password, setPassword] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Password sederhana untuk akses admin
+    if (password === 'admin123') { 
+      window.location.href = '/admin';
+    } else {
+      alert('Password Salah!');
+    }
+  };
 
   // Filter logic sederhana
   const filteredPosts = activeCat === 'All' 
@@ -58,13 +79,6 @@ export default function TeenHubPage() {
             <Link href="#" className="hover:text-black dark:hover:text-white transition-colors">Trending</Link>
             <Link href="#" className="hover:text-black dark:hover:text-white transition-colors">Topics</Link>
           </div>
-
-          <button 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </div>
       </nav>
 
@@ -178,10 +192,51 @@ export default function TeenHubPage() {
         </div>
       </main>
 
+{showLogin && (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+    <motion.div 
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className="bg-white p-8 rounded-[40px] max-w-sm w-full shadow-2xl border border-slate-200"
+    >
+      <h2 className="text-3xl font-black mb-2 text-slate-900">Admin Access</h2>
+      <p className="text-slate-500 text-sm mb-6 font-medium">Silahkan masukkan password admin.</p>
+      
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div className="relative">
+          <input 
+            type="password" 
+            placeholder="Enter Password" 
+            className="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400 font-bold transition-all"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        
+        <div className="flex gap-3 pt-2">
+          <button 
+            type="submit" 
+            className="flex-1 bg-black text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all active:scale-95"
+          >
+            Login
+          </button>
+          <button 
+            type="button"
+            onClick={() => setShowLogin(false)} 
+            className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold hover:bg-slate-200 transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </motion.div>
+  </div>
+)}
+
       {/* FOOTER */}
       <footer className="py-12 text-center border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a]">
         <div className="flex justify-center items-center gap-2 mb-4">
-          <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold italic">B</div>
+          <div onClick={() => setShowLogin(true)} className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold italic">BK</div>
         </div>
         <p className="text-slate-400 text-sm font-medium">Built for the <span className="text-black dark:text-white font-bold">Future You</span>.</p>
       </footer>
