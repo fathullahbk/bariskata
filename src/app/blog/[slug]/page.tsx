@@ -7,28 +7,33 @@ import Link from 'next/link';
 
 export default function BlogPost() {
   const { slug } = useParams();
+  console.log("Slug yang sedang dibuka:", slug);
   const router = useRouter();
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchPost() {
-      const { data, error } = await supabase
-        .from('posts')
-        .update({ }) // Trigger minor update jika perlu, tapi fokus ke select
-        .select('*')
-        .eq('slug', slug)
-        .single();
+useEffect(() => {
+  async function fetchPost() {
+    if (!slug) return;
+    
+    setLoading(true);
+    // Kita pastikan mencari data yang kolom 'slug'-nya SAMA dengan parameter URL
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle(); 
 
-      if (error || !data) {
-        console.error('Error fetching post:', error);
-      } else {
-        setPost(data);
-      }
-      setLoading(false);
+    if (error) {
+      console.error('Supabase Error:', error.message);
+    } else {
+      setPost(data);
     }
-    if (slug) fetchPost();
-  }, [slug]);
+    setLoading(false);
+  }
+  
+  fetchPost();
+}, [slug]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center font-bold">Loading...</div>;
   if (!post) return <div className="min-h-screen flex items-center justify-center font-bold">Artikel tidak ditemukan :(</div>;
