@@ -17,3 +17,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Styling untuk merapikan Quill tanpa Styled-JSX */
+.admin-quill-editor .ql-container.ql-snow {
+  border: none !important;
+  min-height: 300px;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.admin-quill-editor .ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.admin-quill-editor .ql-editor.ql-blank::before {
+  font-style: normal;
+  color: #cbd5e1;
+}
