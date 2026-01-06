@@ -19,6 +19,7 @@ export default function TeenHubPage() {
     { name: 'Personal Growth', emoji: '🚀' },
     { name: 'Mental Health', emoji: '❤️‍🩹' },
     { name: 'Career & Study', emoji: '🎓' },
+    { name: 'Study Skills', emoji: '📚' },
     { name: 'Social Life', emoji: '💬' }
   ];
 
