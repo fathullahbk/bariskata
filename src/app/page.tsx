@@ -86,13 +86,6 @@ async function fetchPosts() {
       {/* HERO SECTION */}
       <main className="container mx-auto px-6 pt-40 pb-20 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold uppercase tracking-widest mb-6"
-          >
-            <Sparkles size={14} /> Daily Inspiration
-          </motion.div>
           
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
