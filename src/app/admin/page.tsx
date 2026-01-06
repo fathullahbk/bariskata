@@ -1,7 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Send, Layout, Trash2, Edit3, Plus } from 'lucide-react';
+import { Layout, Trash2, Edit3, Plus, Save } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+// Import CSS Quill agar toolbar muncul
+import 'react-quill/dist/quill.snow.css';
+
+// Memanggil ReactQuill secara dinamis untuk menghindari error "document is not defined"
+const ReactQuill = dynamic(() => import('react-quill'), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-slate-50 animate-pulse rounded-2xl border border-slate-100" />
+});
 
 export default function AdminPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -10,6 +20,16 @@ export default function AdminPage() {
   const [category, setCategory] = useState('Personal Growth');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Konfigurasi Toolbar Editor agar lengkap
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'blockquote'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['link', 'clean']
+    ],
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -23,8 +43,18 @@ export default function AdminPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    const postData = { title, content, category, slug, summary: content.substring(0, 100) + '...' };
+    
+    // Menghapus tag HTML untuk summary agar tidak berantakan di kartu artikel
+    const pureText = content.replace(/<[^>]*>?/gm, '');
+    const postData = { 
+      title, 
+      content, 
+      category, 
+      slug, 
+      summary: pureText.substring(0, 120) + '...' 
+    };
 
     if (editingId) {
       await supabase.from('posts').update(postData).eq('id', editingId);
@@ -57,24 +87,28 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white"><Layout size={24} /></div>
-            <h1 className="text-3xl font-black italic">CMS ADMIN.</h1>
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+              <Layout size={24} />
+            </div>
+            <h1 className="text-3xl font-black italic tracking-tighter">CMS ADMIN.</h1>
           </div>
         </div>
 
-        {/* FORM INPUT */}
+        {/* FORM INPUT DENGAN EDITOR BARU */}
         <form onSubmit={handleSubmit} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm mb-12">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            {editingId ? <Edit3 size={20}/> : <Plus size={20}/>} {editingId ? 'Edit Artikel' : 'Tulis Artikel Baru'}
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-700">
+            {editingId ? <Edit3 size={20} className="text-blue-600"/> : <Plus size={20} className="text-blue-600"/>} 
+            {editingId ? 'Edit Artikel' : 'Tulis Artikel Baru'}
           </h2>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <input 
               required type="text" placeholder="Judul Artikel..." 
-              className="w-full p-4 bg-slate-50 rounded-2xl outline-none border border-slate-100 focus:border-blue-500"
+              className="w-full p-4 bg-slate-50 rounded-2xl outline-none border border-slate-100 focus:border-blue-500 focus:bg-white transition-all font-bold"
               value={title} onChange={(e) => setTitle(e.target.value)}
             />
             <select 
-              className="w-full p-4 bg-slate-50 rounded-2xl outline-none border border-slate-100 font-bold"
+              className="w-full p-4 bg-slate-50 rounded-2xl outline-none border border-slate-100 font-bold text-slate-600 cursor-pointer"
               value={category} onChange={(e) => setCategory(e.target.value)}
             >
               <option>Personal Growth</option>
@@ -84,13 +118,24 @@ export default function AdminPage() {
               <option>Social Life</option>
             </select>
           </div>
-          <textarea 
-            required placeholder="Isi konten artikel..." 
-            className="w-full p-4 bg-slate-50 rounded-2xl outline-none border border-slate-100 min-h-[200px] mb-6"
-            value={content} onChange={(e) => setContent(e.target.value)}
-          />
-          <button disabled={loading} className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex justify-center gap-2 hover:bg-blue-700 transition-all">
-            {loading ? 'Processing...' : editingId ? 'Update Artikel' : 'Publish Sekarang'}
+
+          {/* AREA EDITOR HTML */}
+          <div className="mb-6 rounded-2xl border border-slate-100 overflow-hidden bg-slate-50">
+            <ReactQuill 
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              modules={modules}
+              placeholder="Tulis isi konten artikel di sini..."
+              className="bg-white min-h-[300px]"
+            />
+          </div>
+
+          <button 
+            disabled={loading} 
+            className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black flex justify-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
+          >
+            {loading ? 'Processing...' : editingId ? 'Simpan Perubahan' : 'Publish Sekarang'}
           </button>
         </form>
 
@@ -115,8 +160,8 @@ export default function AdminPage() {
                   </td>
                   <td className="p-6">
                     <div className="flex gap-2">
-                      <button onClick={() => handleEdit(post)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit3 size={18}/></button>
-                      <button onClick={() => handleDelete(post.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={18}/></button>
+                      <button onClick={() => handleEdit(post)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"><Edit3 size={18}/></button>
+                      <button onClick={() => handleDelete(post.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18}/></button>
                     </div>
                   </td>
                 </tr>
@@ -125,6 +170,13 @@ export default function AdminPage() {
           </table>
         </div>
       </div>
+
+      {/* Style Tambahan untuk Merapikan Editor */}
+      <style jsx global>{`
+        .ql-container.ql-snow { border: none !important; min-height: 300px; font-family: inherit; font-size: 16px; }
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #f1f5f9 !important; background: #f8fafc; padding: 12px; }
+        .ql-editor.ql-blank::before { font-style: normal; color: #cbd5e1; }
+      `}</style>
     </div>
   );
 }
