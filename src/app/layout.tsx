@@ -18,13 +18,20 @@ export const metadata: Metadata = {
   description: "Pulihkan Hati melalui Untaian Kata",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning> {/* Tambahkan suppressHydrationWarning */}
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    // Tambahkan suppressHydrationWarning di sini
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      {/* Pastikan body tidak memiliki class manual yang menimpa */}
+      <body className="antialiased">
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
